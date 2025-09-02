@@ -1,5 +1,6 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { TrendingUp, Clock, Shield, Zap } from "lucide-react";
+import { useEffect, useState } from "react";
 
 const achievements = [
   {
@@ -29,10 +30,28 @@ const achievements = [
 ];
 
 const AchievementsSection = () => {
+  const [isVisible, setIsVisible] = useState(false);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setIsVisible(true);
+        }
+      },
+      { threshold: 0.1 }
+    );
+
+    const section = document.getElementById('achievements');
+    if (section) observer.observe(section);
+
+    return () => observer.disconnect();
+  }, []);
+
   return (
-    <section className="py-20 px-6">
+    <section id="achievements" className="py-20 px-6 bg-muted/30">
       <div className="max-w-6xl mx-auto">
-        <div className="text-center mb-16">
+        <div className={`text-center mb-16 transition-all duration-1000 ${isVisible ? 'animate-fade-in' : 'opacity-0'}`}>
           <h2 className="text-4xl font-bold mb-4 bg-gradient-hero bg-clip-text text-transparent">
             Key Achievements
           </h2>
@@ -47,17 +66,20 @@ const AchievementsSection = () => {
             return (
               <Card 
                 key={index} 
-                className="bg-gradient-card border-border shadow-card hover:shadow-glow transition-all duration-300 hover:scale-105 text-center"
+                className={`bg-gradient-card border-border shadow-card hover:shadow-glow transition-all duration-500 hover:scale-105 hover:-translate-y-2 text-center ${
+                  isVisible ? 'animate-scale-in' : 'opacity-0'
+                }`}
+                style={{ animationDelay: `${index * 0.1}s` }}
               >
                 <CardContent className="pt-8 pb-6">
-                  <div className="w-16 h-16 mx-auto mb-4 bg-tech-blue/20 rounded-full flex items-center justify-center">
+                  <div className="w-16 h-16 mx-auto mb-4 bg-tech-blue/20 rounded-full flex items-center justify-center hover:bg-tech-blue/30 transition-colors duration-300 animate-float" style={{ animationDelay: `${index * 0.5}s` }}>
                     <IconComponent className="h-8 w-8 text-tech-blue" />
                   </div>
                   <div className="space-y-2">
-                    <div className="text-3xl font-bold text-tech-green">
+                    <div className="text-3xl font-bold text-tech-green hover:scale-110 transition-transform duration-200">
                       {achievement.number}
                     </div>
-                    <div className="text-lg font-semibold">
+                    <div className="text-lg font-semibold hover:text-tech-blue transition-colors duration-200">
                       {achievement.label}
                     </div>
                     <div className="text-sm text-muted-foreground">
